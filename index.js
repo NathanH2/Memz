@@ -6,8 +6,6 @@ bot.commands = new Discord.Collection();
 let coins = require("./coins.json");
 let xp = require("./xp.json");
 let purple = botconfig.purple;
-let cooldown = new Set();
-let cdseconds = 5;
 
 fs.readdir("./commands/", (err, files) => {
 
@@ -145,13 +143,6 @@ bot.on("message", async message => {
 
     let prefix = prefixes[message.guild.id].prefixes;
     if(!message.content.startsWith(prefix)) return;
-    if(cooldown.has(message.author.id)){
-        message.delete();
-        return message.reply("You have to wait 2 seconds between commands.")
-    }
-    //if(!message.member.hasPermission("ADMINISTRATOR")){
-        cooldown.add(message.author.id);
-    //}
     
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
@@ -159,10 +150,6 @@ bot.on("message", async message => {
 
     let commandfile = bot.commands.get(cmd.slice(prefix.length));
     if(commandfile) commandfile.run(bot,message,args);
-
-    setTimeout(() => {
-        cooldown.delete(message.author.id)
-    }, cdseconds * 2000)
 
 });
 
